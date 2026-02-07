@@ -1,0 +1,28 @@
+{
+  "name": "energy-brain",
+  "version": "1.0.0",
+  "description": "Autonomous Energy & Microgrid Decision Engine - AI agents coordinate battery, EV, HVAC decisions",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "energy",
+    "microgrid",
+    "ai-agents",
+    "autonomous",
+    "battery",
+    "ev-charging"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  }
+}
