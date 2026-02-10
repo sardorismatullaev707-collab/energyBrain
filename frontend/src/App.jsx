@@ -277,11 +277,11 @@ function App() {
             2 daqiqalik video taqdimot - Terminal simulyatsiyasi va natijalar
           </p>
         </div>
-        <div style={{maxWidth: '1400px', margin: '0 auto', padding: '0 20px'}}>
+        <div style={{maxWidth: '1100px', margin: '0 auto', padding: '0 20px'}}>
           <div className="video-container">
             <iframe 
               width="100%" 
-              height="700" 
+              height="500" 
               src="https://www.youtube.com/embed/YOUR_VIDEO_ID" 
               title="EnergyBrain Demo - AI Energiya Optimizatsiyasi" 
               frameBorder="0" 
@@ -322,14 +322,23 @@ function App() {
             </div>
             <div className="demo-card">
               <h3>📊 OPSD Ma'lumotlari</h3>
-              <p>Real Yevropa energiya bozori ma'lumotlari</p>
+              <p>Real Yevropa energiya bozori ma'lumotlari (ENTSO-E, Germaniya 2019)</p>
               <a 
                 href="https://open-power-system-data.org/" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="btn btn-secondary"
+                style={{marginBottom: '10px'}}
               >
-                OPSD platformasi
+                🌐 OPSD platformasi
+              </a>
+              <a 
+                href="https://data.open-power-system-data.org/time_series/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="btn btn-secondary"
+              >
+                📥 Ma'lumotlar yuklab olish
               </a>
             </div>
             <div className="demo-card">
