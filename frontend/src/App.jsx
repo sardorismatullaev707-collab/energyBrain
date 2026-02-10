@@ -272,7 +272,7 @@ function App() {
       {/* Video Demo Section - Full Width */}
       <section className="section section-light">
         <div className="container">
-          <h2 className="section-title">� Video Demo</h2>
+          <h2 className="section-title">🎥 Video Demo</h2>
           <p style={{textAlign: 'center', fontSize: '1.2em', color: '#666', marginBottom: '40px'}}>
             2 daqiqalik video taqdimot - Terminal simulyatsiyasi va natijalar
           </p>
