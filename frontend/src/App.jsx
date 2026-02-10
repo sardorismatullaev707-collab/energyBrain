@@ -269,10 +269,44 @@ function App() {
         </div>
       </section>
 
-      {/* Demo Section */}
+      {/* Video Demo Section - Full Width */}
+      <section className="section section-light">
+        <div className="container">
+          <h2 className="section-title">� Video Demo</h2>
+          <p style={{textAlign: 'center', fontSize: '1.2em', color: '#666', marginBottom: '40px'}}>
+            2 daqiqalik video taqdimot - Terminal simulyatsiyasi va natijalar
+          </p>
+        </div>
+        <div style={{maxWidth: '1400px', margin: '0 auto', padding: '0 20px'}}>
+          <div className="video-container">
+            <iframe 
+              width="100%" 
+              height="700" 
+              src="https://www.youtube.com/embed/YOUR_VIDEO_ID" 
+              title="EnergyBrain Demo - AI Energiya Optimizatsiyasi" 
+              frameBorder="0" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+              allowFullScreen
+            ></iframe>
+          </div>
+          <div style={{textAlign: 'center', marginTop: '20px'}}>
+            <a 
+              href="https://youtube.com/watch?v=YOUR_VIDEO_ID" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="btn btn-primary"
+              style={{fontSize: '1.1em', padding: '15px 40px'}}
+            >
+              📺 YouTube'da to'liq ko'rish
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Demo Links Section */}
       <section id="demo" className="section">
         <div className="container">
-          <h2 className="section-title">🎬 Demo va Havolalar</h2>
+          <h2 className="section-title">🔗 Havolalar va Resurslar</h2>
           <div className="demo-grid">
             <div className="demo-card">
               <h3>📦 GitHub Repository</h3>
@@ -284,30 +318,6 @@ function App() {
                 className="btn btn-primary"
               >
                 GitHub'da ochish
-              </a>
-            </div>
-            <div className="demo-card video-card">
-              <h3>🎥 Video Demo</h3>
-              <p>2 daqiqalik video taqdimot (terminal + natijalar)</p>
-              <div className="video-container">
-                <iframe 
-                  width="100%" 
-                  height="315" 
-                  src="https://www.youtube.com/embed/YOUR_VIDEO_ID" 
-                  title="EnergyBrain Demo" 
-                  frameBorder="0" 
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                  allowFullScreen
-                ></iframe>
-              </div>
-              <a 
-                href="https://youtube.com/watch?v=YOUR_VIDEO_ID" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="btn btn-secondary"
-                style={{marginTop: '15px'}}
-              >
-                YouTube'da ochish
               </a>
             </div>
             <div className="demo-card">
