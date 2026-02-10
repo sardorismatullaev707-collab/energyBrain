@@ -280,8 +280,8 @@
 }
 
 .team-avatar {
-  width: 150px;
-  height: 150px;
+  width: 200px;
+  height: 200px;
   margin: 0 auto 20px;
   border-radius: 50%;
   overflow: hidden;
@@ -295,14 +295,16 @@
 }
 
 .team-name {
-  font-size: 1.4em;
+  font-size: 1.5em;
   margin-bottom: 10px;
   color: #333;
+  font-weight: 600;
 }
 
 .team-role {
   color: #667eea;
   font-weight: 600;
+  font-size: 1.1em;
 }
 
 /* Workflow Section */
@@ -464,7 +466,7 @@
 
 .video-card {
   grid-column: 1 / -1;
-  max-width: 800px;
+  max-width: 1000px;
   margin: 0 auto;
 }
 
@@ -475,6 +477,7 @@
   overflow: hidden;
   border-radius: 10px;
   margin-bottom: 20px;
+  min-height: 500px;
 }
 
 .video-container iframe {

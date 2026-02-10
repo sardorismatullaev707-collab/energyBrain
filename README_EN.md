@@ -8,8 +8,6 @@
 
 > **💰 25.6% daily savings ($715/year!) | 🔋 Real 24h simulation | ✅ 100% EV deadline | 🇪🇺 OPSD real EU data**
 
-**English | [O'zbekcha](README_UZ.md)**
-
 An AI-backend system where multiple LLM-powered agents coordinate to optimize energy management in a microgrid environment. **No UI, no hardcoded rules** - just intelligent agents making decisions every 15 minutes using mock LLM reasoning (no external API keys required).
 
 ## 🌟 Highlights
