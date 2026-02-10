@@ -282,16 +282,17 @@ function App() {
             <iframe 
               width="100%" 
               height="500" 
-              src="https://www.youtube.com/embed/YOUR_VIDEO_ID" 
+              src="https://www.youtube.com/embed/sDXGy7_KjVg?si=WdAETknBzwwZ1Jun" 
               title="EnergyBrain Demo - AI Energiya Optimizatsiyasi" 
               frameBorder="0" 
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+              referrerPolicy="strict-origin-when-cross-origin"
               allowFullScreen
             ></iframe>
           </div>
           <div style={{textAlign: 'center', marginTop: '20px'}}>
             <a 
-              href="https://youtube.com/watch?v=YOUR_VIDEO_ID" 
+              href="https://youtu.be/sDXGy7_KjVg?si=ZeACKlE8N0utdl1t" 
               target="_blank" 
               rel="noopener noreferrer"
               className="btn btn-primary"
