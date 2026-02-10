@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EnergyBrain - AI-Powered Energy Optimization</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            padding: 40px 20px;
+        }
+
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header .tagline {
+            font-size: 1.3em;
+            opacity: 0.95;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card h3 {
+            font-size: 0.9em;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+            margin: 10px 0;
+        }
+
+        .stat-card .value.green {
+            color: #10b981;
+        }
+
+        .stat-card .value.red {
+            color: #ef4444;
+        }
+
+        .stat-card .description {
+            font-size: 0.9em;
+            color: #888;
+        }
+
+        .chart-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .chart-section h2 {
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin-top: 20px;
+        }
+
+        .controls {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+
+        .btn:hover {
+            background: #764ba2;
+            transform: scale(1.05);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2em;
+            color: white;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #10b981;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            padding: 40px 20px;
+            opacity: 0.8;
+        }
+
+        .data-source {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            color: white;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔋 EnergyBrain</h1>
+            <p class="tagline">Autonomous AI Energy Management System</p>
+            <div class="data-source">
+                📊 Using real EU energy data from <strong>Open Power System Data</strong> (ENTSO-E)<br>
+                🇩🇪 Germany DE_LU bidding zone | 📅 July 15, 2019 | ⏰ Full 24h simulation
+            </div>
+        </header>
+
+        <div id="loading" class="loading">
+            <p>🧠 Running AI simulation with real market data...</p>
+            <p style="font-size: 0.9em; margin-top: 10px;">This may take 10-15 seconds</p>
+        </div>
+
+        <div id="results" style="display: none;">
+            <!-- Key Metrics -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>💰 Daily Savings</h3>
+                    <div class="value green" id="daily-savings">$0.00</div>
+                    <div class="description" id="savings-percent">0%</div>
+                </div>
+
+                <div class="stat-card">
+                    <h3>📅 Monthly Savings</h3>
+                    <div class="value green" id="monthly-savings">$0.00</div>
+                    <div class="description">30 days projection</div>
+                </div>
+
+                <div class="stat-card">
+                    <h3>📈 Annual Savings</h3>
+                    <div class="value green" id="annual-savings">$0.00</div>
+                    <div class="description">365 days projection</div>
+                </div>
+
+                <div class="stat-card">
+                    <h3>🌍 CO₂ Avoided</h3>
+                    <div class="value" style="color: #10b981;" id="co2-avoided">0 kg</div>
+                    <div class="description">per year</div>
+                </div>
+
+                <div class="stat-card">
+                    <h3>⚡ Energy Saved</h3>
+                    <div class="value" id="energy-saved">0 kWh</div>
+                    <div class="description">daily reduction</div>
+                </div>
+
+                <div class="stat-card">
+                    <h3>🚗 EV Deadline</h3>
+                    <div class="value green" id="ev-status">✓ MET</div>
+                    <div class="description">10 kWh by 07:00</div>
+                </div>
+            </div>
+
+            <!-- Price & Solar Chart -->
+            <div class="chart-section">
+                <h2>📊 Real Market Data (24h cycle)</h2>
+                <div class="chart-container">
+                    <canvas id="priceChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Cost Comparison Chart -->
+            <div class="chart-section">
+                <h2>💰 Cost Comparison: Baseline vs AI Agent</h2>
+                <div class="chart-container">
+                    <canvas id="costChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Battery & EV Chart -->
+            <div class="chart-section">
+                <h2>🔋 Battery & EV Management</h2>
+                <div class="chart-container">
+                    <canvas id="batteryChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn" id="runBtn" onclick="runSimulation()">
+                🚀 Run Simulation
+            </button>
+            <button class="btn" onclick="window.open('https://github.com/sardorismatullaev707-collab/energyBrain', '_blank')">
+                📁 View on GitHub
+            </button>
+        </div>
+
+        <footer class="footer">
+            <p><strong>EnergyBrain</strong> - Backend AI System for Energy Optimization</p>
+            <p style="margin-top: 10px;">Real data • AI agents • Safety constraints • Production-ready</p>
+            <p style="margin-top: 20px; font-size: 0.85em;">
+                Data: <a href="https://open-power-system-data.org/" target="_blank" style="color: white; text-decoration: underline;">Open Power System Data (CC-BY 4.0)</a>
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        let simulationData = null;
+
+        async function runSimulation() {
+            const loadingEl = document.getElementById('loading');
+            const resultsEl = document.getElementById('results');
+            const btnEl = document.getElementById('runBtn');
+
+            btnEl.disabled = true;
+            btnEl.textContent = '⏳ Running...';
+            loadingEl.style.display = 'block';
+            resultsEl.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/simulate');
+                simulationData = await response.json();
+
+                updateStats(simulationData);
+                createCharts(simulationData);
+
+                loadingEl.style.display = 'none';
+                resultsEl.style.display = 'block';
+                btnEl.textContent = '🔄 Run Again';
+                btnEl.disabled = false;
+            } catch (error) {
+                alert('Error running simulation. Make sure the server is running.');
+                console.error(error);
+                btnEl.disabled = false;
+                btnEl.textContent = '🚀 Run Simulation';
+            }
+        }
+
+        function updateStats(data) {
+            const dailySavings = data.baselineCost - data.agentCost;
+            const savingsPercent = (dailySavings / data.baselineCost) * 100;
+            const monthlySavings = dailySavings * 30;
+            const annualSavings = dailySavings * 365;
+            const energySaved = data.baselineKWh - data.agentKWh;
+            const co2Avoided = energySaved * 365 * 0.385; // kg CO₂
+
+            document.getElementById('daily-savings').textContent = `$${dailySavings.toFixed(2)}`;
+            document.getElementById('savings-percent').textContent = `${savingsPercent.toFixed(1)}% reduction`;
+            document.getElementById('monthly-savings').textContent = `$${monthlySavings.toFixed(2)}`;
+            document.getElementById('annual-savings').textContent = `$${annualSavings.toFixed(2)}`;
+            document.getElementById('co2-avoided').textContent = `${co2Avoided.toFixed(0)} kg`;
+            document.getElementById('energy-saved').textContent = `${energySaved.toFixed(1)} kWh`;
+            document.getElementById('ev-status').textContent = data.evDeadlineMet ? '✓ MET' : '✗ FAILED';
+        }
+
+        function createCharts(data) {
+            // Price & Solar Chart
+            const priceCtx = document.getElementById('priceChart').getContext('2d');
+            new Chart(priceCtx, {
+                type: 'line',
+                data: {
+                    labels: data.hours,
+                    datasets: [
+                        {
+                            label: 'Electricity Price ($/kWh)',
+                            data: data.prices,
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            yAxisID: 'y',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Solar Generation (kW)',
+                            data: data.solar,
+                            borderColor: '#f59e0b',
+                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                            yAxisID: 'y1',
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    scales: {
+                        y: { type: 'linear', position: 'left', title: { display: true, text: 'Price ($/kWh)' } },
+                        y1: { type: 'linear', position: 'right', title: { display: true, text: 'Solar (kW)' }, grid: { drawOnChartArea: false } }
+                    }
+                }
+            });
+
+            // Cost Comparison Chart
+            const costCtx = document.getElementById('costChart').getContext('2d');
+            new Chart(costCtx, {
+                type: 'line',
+                data: {
+                    labels: data.hours,
+                    datasets: [
+                        {
+                            label: 'Baseline Cost (cumulative)',
+                            data: data.baselineCostCumulative,
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'AI Agent Cost (cumulative)',
+                            data: data.agentCostCumulative,
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    scales: {
+                        y: { title: { display: true, text: 'Cumulative Cost ($)' } }
+                    }
+                }
+            });
+
+            // Battery & EV Chart
+            const batteryCtx = document.getElementById('batteryChart').getContext('2d');
+            new Chart(batteryCtx, {
+                type: 'line',
+                data: {
+                    labels: data.hours,
+                    datasets: [
+                        {
+                            label: 'Battery SOC (%)',
+                            data: data.batterySOC,
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            yAxisID: 'y',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'EV Charge Remaining (kWh)',
+                            data: data.evRemaining,
+                            borderColor: '#8b5cf6',
+                            backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                            yAxisID: 'y1',
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    scales: {
+                        y: { type: 'linear', position: 'left', title: { display: true, text: 'Battery SOC (%)' }, min: 0, max: 100 },
+                        y1: { type: 'linear', position: 'right', title: { display: true, text: 'EV Remaining (kWh)' }, grid: { drawOnChartArea: false }, min: 0, max: 10 }
+                    }
+                }
+            });
+        }
+
+        // Auto-run on page load
+        window.addEventListener('load', () => {
+            setTimeout(runSimulation, 500);
+        });
+    </script>
+</body>
+</html>

@@ -324,6 +324,44 @@ export function printEvidenceReport(
     console.log(`   Penalty avoidance      : $${penaltyAvoidance.toFixed(2)}`);
   }
 
+  // ===== MONTHLY PROJECTION =====
+  console.log(`\n` + "-".repeat(80));
+  console.log(`📅 MONTHLY & ANNUAL PROJECTION`);
+  console.log("-".repeat(80));
+  
+  const dailySavings = savedUSD;
+  const monthlySavings = dailySavings * 30;  // 30 days
+  const annualSavings = dailySavings * 365;  // 365 days
+  
+  const baselineMonthlyCost = baselineMetrics.totalCost * 30;
+  const agentMonthlyCost = agentMetrics.totalCost * 30;
+  
+  const baselineAnnualCost = baselineMetrics.totalCost * 365;
+  const agentAnnualCost = agentMetrics.totalCost * 365;
+  
+  const monthlyKWhSaved = (baselineMetrics.totalImportedKWh - agentMetrics.totalImportedKWh) * 30;
+  const annualKWhSaved = (baselineMetrics.totalImportedKWh - agentMetrics.totalImportedKWh) * 365;
+  
+  console.log(`\nDaily (24h simulation):`);
+  console.log(`  Baseline cost          : $${baselineMetrics.totalCost.toFixed(2)}`);
+  console.log(`  Agent cost             : $${agentMetrics.totalCost.toFixed(2)}`);
+  console.log(`  Daily savings          : $${dailySavings.toFixed(2)} (${savingsPercent.toFixed(1)}%)`);
+  console.log(`  Energy saved           : ${(baselineMetrics.totalImportedKWh - agentMetrics.totalImportedKWh).toFixed(2)} kWh`);
+  
+  console.log(`\nMonthly projection (30 days):`);
+  console.log(`  Baseline cost          : $${baselineMonthlyCost.toFixed(2)}`);
+  console.log(`  Agent cost             : $${agentMonthlyCost.toFixed(2)}`);
+  console.log(`  💰 Monthly savings     : $${monthlySavings.toFixed(2)} (${savingsPercent.toFixed(1)}%)`);
+  console.log(`  Energy saved           : ${monthlyKWhSaved.toFixed(0)} kWh/month`);
+  
+  console.log(`\nAnnual projection (365 days):`);
+  console.log(`  Baseline cost          : $${baselineAnnualCost.toFixed(2)}`);
+  console.log(`  Agent cost             : $${agentAnnualCost.toFixed(2)}`);
+  console.log(`  💰 Annual savings      : $${annualSavings.toFixed(2)} (${savingsPercent.toFixed(1)}%)`);
+  console.log(`  Energy saved           : ${(annualKWhSaved / 1000).toFixed(1)} MWh/year`);
+  console.log(`\n  🌍 CO₂ avoided (est.)  : ${(annualKWhSaved * 0.385).toFixed(0)} kg CO₂/year`);
+  console.log(`     (assuming 385g CO₂/kWh grid mix)`);
+
   // ===== SAFETY & RELIABILITY =====
   console.log("\n" + "-".repeat(80));
   console.log("🔒 SAFETY & RELIABILITY");

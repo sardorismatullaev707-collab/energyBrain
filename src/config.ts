@@ -2,7 +2,7 @@
 
 export const CONFIG = {
   // Simulation parameters
-  TOTAL_STEPS: 48,
+  TOTAL_STEPS: 96,  // 24 hours × 4 steps/hour = 96 steps
   DT_HOURS: 0.25, // 15 minutes
 
   // Battery parameters

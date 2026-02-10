@@ -1,15 +1,31 @@
 // Solar generation scenario with cloud event
 
-export function makeSolarKW(): number[] {
+import { makeOPSDSolarKW } from "./opsd.js";
+import { ScenarioType } from "./tariffs.js";
+
+export function makeSolarKW(scenario: ScenarioType = "default"): number[] {
+  if (scenario === "opsd") {
+    return makeOPSDSolarKW();
+  }
+  return makeDefaultSolarKW();
+}
+
+/** Original hardcoded solar scenario */
+function makeDefaultSolarKW(): number[] {
   const solar: number[] = [];
-  for (let i = 0; i < 48; i++) {
-    // Bell curve centered around midday (step 24 = noon)
-    const x = (i - 24) / 8;
+  for (let i = 0; i < 96; i++) {  // 24 hours = 96 steps
+    // Bell curve centered around midday (step 48 = noon in 24h)
+    const x = (i - 48) / 16;  // Wider spread for 24h
     let pv = Math.max(0, 4.0 * Math.exp(-x * x)); // max 4kW at solar noon
 
-    // Cloud event: PV drops around steps 26-28 (afternoon clouds)
-    if (i >= 26 && i <= 28) {
+    // Cloud event: PV drops around steps 52-56 (afternoon clouds ~13:00-14:00)
+    if (i >= 52 && i <= 56) {
       pv *= 0.3;
+    }
+
+    // Night hours: no solar (00:00-06:00 and 20:00-24:00)
+    if (i < 24 || i >= 80) {
+      pv = 0;
     }
 
     solar.push(pv);

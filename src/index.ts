@@ -12,14 +12,17 @@ import { MockLLMProvider } from "./llm/mockProvider.js";
 import { createMockTelemetry, applyTelemetry } from "./mock/telemetry.js";
 import { runAgentStep, AgentMode, DecisionLog } from "./agents/orchestrator.js";
 import { printEvidenceReport } from "./util/report.js";
+import { ScenarioType } from "./scenario/tariffs.js";
+import { getOPSDMetadata } from "./scenario/opsd.js";
 
 /**
  * Parse CLI arguments
  */
-function parseArgs(): { mode: AgentMode; seed: number } {
+function parseArgs(): { mode: AgentMode; seed: number; scenario: ScenarioType } {
   const args = process.argv.slice(2);
   let mode: AgentMode = "llm"; // default to LLM mode
   let seed = 42;
+  let scenario: ScenarioType = "default";
 
   for (const arg of args) {
     if (arg.startsWith("--mode=")) {
@@ -31,9 +34,15 @@ function parseArgs(): { mode: AgentMode; seed: number } {
     if (arg.startsWith("--seed=")) {
       seed = parseInt(arg.split("=")[1]) || 42;
     }
+    if (arg.startsWith("--scenario=")) {
+      const scenarioValue = arg.split("=")[1] as ScenarioType;
+      if (["default", "opsd"].includes(scenarioValue)) {
+        scenario = scenarioValue;
+      }
+    }
   }
 
-  return { mode, seed };
+  return { mode, seed, scenario };
 }
 
 /**
@@ -56,7 +65,7 @@ function initialState(): EnergyState {
     batteryMaxDischargeKW: 3.5,
 
     evRequiredKWh: 10.0,
-    evDeadlineStep: 28, // must complete by ~7 hours
+    evDeadlineStep: 28, // must complete by 07:00 (morning commute, step 28 = 7am)
     evMaxChargeKW: 3.5,
 
     gridMaxKW: 6.0,
@@ -69,11 +78,12 @@ function initialState(): EnergyState {
 async function runAgent(
   provider: MockLLMProvider,
   mode: AgentMode,
-  seed: number
+  seed: number,
+  scenario: ScenarioType = "default"
 ): Promise<{ results: StepResult[]; logs: DecisionLog[] }> {
   let state = initialState();
   const mem = createMemory();
-  const telemetry = createMockTelemetry(seed);
+  const telemetry = createMockTelemetry(seed, scenario);
 
   const results: StepResult[] = [];
   const logs: DecisionLog[] = [];
@@ -135,9 +145,9 @@ function getLLMBadge(usedLLM: { interpreter: boolean; planner: boolean; executor
 /**
  * Run the baseline controller for 48 steps
  */
-async function runBaseline(seed: number): Promise<StepResult[]> {
+async function runBaseline(seed: number, scenario: ScenarioType = "default"): Promise<StepResult[]> {
   let state = initialState();
-  const telemetry = createMockTelemetry(seed);
+  const telemetry = createMockTelemetry(seed, scenario);
 
   const results: StepResult[] = [];
 
@@ -182,16 +192,27 @@ async function runBaseline(seed: number): Promise<StepResult[]> {
  */
 (async () => {
   try {
-    const { mode, seed } = parseArgs();
+    const { mode, seed, scenario } = parseArgs();
 
     console.log("\n🔋 EnergyBrain - Autonomous Microgrid Decision Engine\n");
     console.log(`Configuration:`);
     console.log(`  • Mode: ${mode.toUpperCase()}`);
     console.log(`  • Seed: ${seed}`);
-    console.log(`\nSimulating 48 steps (12 hours) with:`);
-    console.log("  • Dynamic tariffs with price shock");
-    console.log("  • Solar generation with cloud event");
-    console.log("  • EV charging deadline");
+    console.log(`  • Scenario: ${scenario.toUpperCase()}`);
+
+    if (scenario === "opsd") {
+      const meta = getOPSDMetadata();
+      console.log(`\n📊 OPSD Real EU Data:`);
+      console.log(`  • Source: ${meta.source}`);
+      console.log(`  • Region: ${meta.biddingZone}`);
+      console.log(`  • Date: ${meta.date} (${meta.window})`);
+      console.log(`  • License: ${meta.license}`);
+    }
+
+    console.log(`\nSimulating 96 steps (24 hours) with:`);
+    console.log(`  • ${scenario === "opsd" ? "Real EU day-ahead prices (EPEX SPOT)" : "Dynamic tariffs with price shock"}`);
+    console.log(`  • ${scenario === "opsd" ? "Real German solar generation data" : "Solar generation with cloud event"}`);
+    console.log("  • EV charging deadline (ready by 07:00 for morning commute)");
     console.log("  • Grid power limit");
     console.log("  • Comfort constraints");
     console.log(`  • ${mode === "llm" ? "🧠 AI agents with LLM reasoning" : mode === "hybrid" ? "🧠 Hybrid LLM + heuristics" : "⚡ Fast heuristics"}\n`);
@@ -200,8 +221,8 @@ async function runBaseline(seed: number): Promise<StepResult[]> {
     const provider = new MockLLMProvider({ seed });
 
     // Run both systems
-    const { results: agentRes, logs: agentLogs } = await runAgent(provider, mode, seed);
-    const baseRes = await runBaseline(seed);
+    const { results: agentRes, logs: agentLogs } = await runAgent(provider, mode, seed, scenario);
+    const baseRes = await runBaseline(seed, scenario);
 
     // Generate comprehensive evidence report
     printEvidenceReport(mode, baseRes, agentRes, agentLogs);
